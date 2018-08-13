@@ -1,0 +1,40 @@
+group 'io.javalin'
+version '1.0'
+
+apply plugin: 'kotlin'
+
+sourceCompatibility = 1.8
+
+buildscript {
+    ext.kotlin_version = '1.2.51'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'io.javalin:javalin:1.7.0'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.6'
+    compile 'com.google.code.gson:gson:2.8.2'
+    
+    compile group: 'org.apache.kafka', name: 'kafka-clients', version: '2.0.0'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.25'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.example.MainKt'
+    }
+
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
