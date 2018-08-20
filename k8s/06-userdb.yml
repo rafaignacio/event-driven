@@ -2,14 +2,25 @@ apiVersion: v1
 kind: Service
 metadata:
   name: userdb
-  labels:
-    app: userdb
 spec:
   selector:
     app: userdb
   ports:
     - port: 3306
       name: db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: userdb-ext
+spec:
+  selector:
+    app: userdb
+  ports:
+    - port: 3306
+      nodePort: 30003
+      name: db
+  type: NodePort
 ---
 apiVersion: v1
 kind: Service

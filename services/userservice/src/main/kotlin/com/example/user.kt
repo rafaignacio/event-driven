@@ -22,7 +22,7 @@ class Usuario(id: EntityID<Int>) : IntEntity(id) {
 }
 
 class User {
-    private val connectionString = "jdbc:mysql://root:test@userdb/UserDB?useSSL=false"
+    private val connectionString = "jdbc:mysql://root:test@userdb:3306/UserDB?useSSL=false"
     //private val connectionString = "jdbc:mysql://root:test@192.168.99.100:30003/UserDB?useSSL=false"
 
     fun listUsers() : List<UsuarioModel>? {

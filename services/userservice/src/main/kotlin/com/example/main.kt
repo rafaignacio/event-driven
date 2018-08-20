@@ -26,8 +26,14 @@ fun main(args: Array<String>) {
     val port = System.getenv("PORT") ?: "7000"
     val app = Javalin.start( port.toInt() )
 
+    println("listening on port ${port}")
+
     app.routes {
         get("/") { ctx -> 
+            ctx.status(200).result("OKDOK")
+        }
+
+        get("/users") { ctx -> 
             try {
                 val users = User().listUsers()
             
@@ -76,5 +82,10 @@ fun main(args: Array<String>) {
 
             ctx.status( 202 ).result("Arquivo recebido")
         }
+    }
+
+    app.exception(Exception::class.java) { e, ctx ->
+        println(e.message)
+        e.printStackTrace()
     }
 }
