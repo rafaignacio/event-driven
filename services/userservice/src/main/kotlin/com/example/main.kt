@@ -45,7 +45,7 @@ fun main(args: Array<String>) {
             val gson = Gson()
             val user = gson.fromJson( ctx.body(), UsuarioModel::class.java )
 
-            if(user.nome != null) {
+            if(!user.nome.isBlank()) {
                 val producer = createProducer("kafka:9092")
 
                 producer.send(ProducerRecord("userevents", "{ \"type\": \"USER_CREATED\", data: \"${user}\" }"))
