@@ -46,9 +46,9 @@ fun main(args: Array<String>) {
             val user = gson.fromJson( ctx.body(), UsuarioModel::class.java )
 
             if(!user.nome.isBlank()) {
-                val producer = createProducer("kafka:9092")
+                val producer = createProducer("kafka1:9092")
 
-                producer.send(ProducerRecord("userevents", "{ \"type\": \"USER_CREATED\", data: \"${user}\" }"))
+                producer.send(ProducerRecord("userevents", "{ \"type\": \"USER_CREATED\", data: {\"${user}\"} }"))
             } else {
                 ctx.status(400).result("Parametros inválidos.")
             }
