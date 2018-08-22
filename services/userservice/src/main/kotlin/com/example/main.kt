@@ -5,12 +5,14 @@ import io.javalin.ApiBuilder.*
 import com.google.gson.Gson
 import com.example.Usuario
 import com.example.User
+import org.apache.log4j.*
 
 import java.util.Properties
 import org.apache.kafka.common.serialization.StringSerializer
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
+import org.apache.kafka.clients.producer.RecordMetadata
 
 private fun createProducer(brokers: String) : Producer<String, String> {
     val props = Properties()
@@ -26,17 +28,19 @@ fun main(args: Array<String>) {
     val port = System.getenv("PORT") ?: "7000"
     val app = Javalin.start( port.toInt() )
 
+    BasicConfigurator.configure()
+
     println("listening on port ${port}")
 
     app.routes {
-        get("/") { ctx -> 
+        get("/") { ctx ->
             ctx.status(200).result("OKDOK")
         }
 
-        get("/users") { ctx -> 
+        get("/users") { ctx ->
             try {
                 val users = User().listUsers()
-            
+
                 users?.let {
                     ctx.status(200).json(users)
                 } ?: ctx.status(404)
@@ -47,14 +51,28 @@ fun main(args: Array<String>) {
             }
         }
 
-        post("/users") { ctx -> 
+        post("/users") { ctx ->
             val gson = Gson()
             val user = gson.fromJson( ctx.body(), UsuarioModel::class.java )
 
             if(!user.nome.isBlank()) {
-                val producer = createProducer("kafka1:9092")
+                try {
+                    val producer = createProducer("kafka1:9093")
 
-                producer.send(ProducerRecord("userevents", "{ \"type\": \"USER_CREATED\", data: {\"${user}\"} }"))
+                    // val output = producer.send(ProducerRecord("userevent", "{ \"type\": \"USER_CREATED\", data: {\"${user}\"} }")).get()
+                    val output = producer.send(ProducerRecord("userevent1", "TEST")).get()
+                    producer.close()
+
+                    if(output.hasOffset()) {
+                        ctx.status(201).json(output)
+                    } else {
+                        ctx.status(500)
+                    }
+                } catch (ex: Exception) {
+                    println(ex.message)
+                    ex.printStackTrace()
+                    ctx.status(500).json(ex)
+                }
             } else {
                 ctx.status(400).result("Parametros inválidos.")
             }
@@ -70,7 +88,7 @@ fun main(args: Array<String>) {
                 output?.let {
                     ctx.status(201).json(output)
                 } ?: ctx.status(500)
-                
+
             } ?: ctx.status(400).result("entrada inválida")
         }
 

@@ -21,7 +21,7 @@ spec:
   selector:
     matchLabels:
       app: userservice
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       labels:
@@ -29,7 +29,9 @@ spec:
     spec:
       containers:
         - name: userservice
-          image: gcr.io/event-driven-example/userservice:latest
+          # image: gcr.io/event-driven-example/userservice:latest
+          image: userservice
+          imagePullPolicy: Never
           env:
             - name: LOG4J_ROOTLOGGER
               value: DEBUG, A1
