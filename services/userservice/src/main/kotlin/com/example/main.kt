@@ -57,17 +57,17 @@ fun main(args: Array<String>) {
 
             if(!user.nome.isBlank()) {
                 try {
-                    val producer = createProducer("kafka1:9093")
-
-                    // val output = producer.send(ProducerRecord("userevent", "{ \"type\": \"USER_CREATED\", data: {\"${user}\"} }")).get()
-                    val output = producer.send(ProducerRecord("userevent1", "TEST")).get()
-                    producer.close()
-
-                    if(output.hasOffset()) {
-                        ctx.status(201).json(output)
-                    } else {
-                        ctx.status(500)
-                    }
+					val output = User().createUser( user )
+					output?.let {
+						ctx.header("Location", "/users/${output.ID}")
+						
+						val producer = createProducer("kafka1:9093,kafka2:9093")
+	                    producer.send(ProducerRecord("userevent", "{ \"type\": \"USER_CREATED\", data: ${gson.toJson(user)} }")).get()
+	
+	                    producer.close()
+						
+	                    ctx.status(201)
+	                } ?: ctx.status(500)
                 } catch (ex: Exception) {
                     println(ex.message)
                     ex.printStackTrace()
@@ -102,7 +102,7 @@ fun main(args: Array<String>) {
         }
     }
 
-    app.exception(Exception::class.java) { e, ctx ->
+    app.exception(Exception::class.java) { e, _ ->
         println(e.message)
         e.printStackTrace()
     }
