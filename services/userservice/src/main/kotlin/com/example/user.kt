@@ -7,11 +7,12 @@ import org.jetbrains.exposed.dao.*
 import java.sql.*
 import java.util.Properties
 
-data class UsuarioModel(var ID: Int, var nome: String, var host: String)
+data class UsuarioModel(var ID: Int, var nome: String, var email: String, var host: String)
 
 object Users : IntIdTable() {
     val nome = varchar("nome", 250).index()
     val host = varchar("host", 200)
+	val email = varchar("email", 150)
 }
 
 class Usuario(id: EntityID<Int>) : IntEntity(id) {
@@ -19,11 +20,11 @@ class Usuario(id: EntityID<Int>) : IntEntity(id) {
 
     var nome by Users.nome
     var host by Users.host
+	var email by Users.email
 }
 
 class User {
     private val connectionString = "jdbc:mysql://root:test@userdb:3306/UserDB?useSSL=false"
-//    private val connectionString = "jdbc:mysql://root:test@192.168.99.100:30003/UserDB?useSSL=false"
 
     fun listUsers() : List<UsuarioModel>? {
 
@@ -42,7 +43,7 @@ class User {
                 output = mutableListOf<UsuarioModel>()
 
                 list.forEach {
-                    output?.add( UsuarioModel( it.id.value, it.nome, it.host ) )
+                    output?.add( UsuarioModel( it.id.value, it.nome, it.email, it.host ) )
                 }
             }
         }
@@ -62,9 +63,10 @@ class User {
                 val output = Usuario.new {
                     nome = u.nome
                     host = System.getenv("HOSTNAME") ?: "localhost"
+					email = u.email
                 }
 
-                return@transaction UsuarioModel( output.id.value, output.nome, output.host )
+                return@transaction UsuarioModel( output.id.value, output.nome, output.email, output.host )
             } catch (e: Exception) {
                 e.printStackTrace()
                 return@transaction null

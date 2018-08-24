@@ -60,6 +60,7 @@ fun main(args: Array<String>) {
 					val output = User().createUser( user )
 					output?.let {
 						ctx.header("Location", "/users/${output.ID}")
+						user.ID = output.ID
 						
 						val producer = createProducer("kafka1:9093,kafka2:9093")
 	                    producer.send(ProducerRecord("userevent", "{ \"type\": \"USER_CREATED\", data: ${gson.toJson(user)} }")).get()
