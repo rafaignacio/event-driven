@@ -2,9 +2,6 @@ FROM microsoft/dotnet:2.1-sdk
 RUN mkdir /app
 WORKDIR /app
 
-COPY balanceservice.csproj .
-RUN dotnet restore
-
 COPY . .
 RUN dotnet publish -c Release -o out
 

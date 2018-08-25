@@ -26,20 +26,23 @@ namespace balanceservice
 
         private static async Task CreateConsumer()
         {
-            Console.WriteLine("creating consumer...");
             await Task.Run(() =>
             {
                 var conf = new Dictionary<string, object>
                 {
-                    { "group.id", "balance-group" },
+                    { "group.id", "balance-group-7" },
                     { "bootstrap.servers", "kafka1:9093,kafka2:9093" },
+                    { "auto.offset.reset", "earliest" },
+                    { "enable.auto.commit", "false" },
                 };
 
                 using (var consumer = new Consumer<Null, string>(conf, null, new StringDeserializer(Encoding.UTF8)))
                 {
                     consumer.OnMessage += async (_, msg) =>
                     {
-                        await consumer.CommitAsync();
+                        Console.WriteLine($"Value: {msg.Value}\r\nFrom partition: {msg.Partition}");
+
+                        await consumer.CommitAsync(msg);
                     };
 
                     consumer.OnError += (_, error)
