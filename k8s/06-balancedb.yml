@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: balancedb
+spec:
+  selector:
+    app: balancedb
+  ports:
+    - port: 3306
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: balancedb
+spec:
+  selector:
+    matchLabels:
+      app: balancedb
+  template:
+    metadata:
+      labels:
+        app: balancedb
+    spec:
+      containers:
+        - name: balancedb
+          image: mysql
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: test

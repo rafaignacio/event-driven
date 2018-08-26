@@ -17,8 +17,24 @@ namespace balanceservice.Helpers
 
             using (var producer = new Producer<Null, string>(config, null, new StringSerializer(Encoding.UTF8)))
             {
-                var dr = producer.ProduceAsync("balance-events", null, "test message text").Result;
-                Console.WriteLine($"Delivered '{dr.Value}' to: {dr.TopicPartitionOffset}");
+                using (var data = new DataContext())
+                {
+                    data.Database.EnsureCreated();
+
+                    var acc = new Models.AccountViewModel
+                    {
+                        ID = System.Guid.NewGuid().ToString(),
+                        UserID = user_id,
+                        Host = System.Environment.GetEnvironmentVariable("HOSTNAME") ?? "localhost",
+                    };
+
+                    data.Accounts.Add(acc);
+                    data.SaveChanges();
+
+                    var dr = producer.ProduceAsync("balance-events", null, $"{{ type: \"ACC_CREATED\"," +
+                        $" data: {{ \"user\" : {acc.UserID}, \"acc_id\": \"{acc.ID}\" }}}}").Result;
+                    Console.WriteLine($"Delivered '{dr.Value}' to: {dr.TopicPartitionOffset}");
+                }
             }
         }
     }

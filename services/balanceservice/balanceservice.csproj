@@ -7,6 +7,10 @@
   <ItemGroup>
     <PackageReference Include="Confluent.Kafka" Version="0.11.5" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.1" PrivateAssets="All" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.1.1" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql.Design" Version="1.1.2" />
   </ItemGroup>
 
 </Project>
