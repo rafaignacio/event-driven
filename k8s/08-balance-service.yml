@@ -28,6 +28,7 @@ spec:
       containers:
         - name: balanceservice
           image: balanceservice
+          # image: gcr.io/event-driven-example/balanceservice:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 5000
